@@ -3,6 +3,7 @@
 #include <iostream>
 #include "Character.h"
 #include "Prop.h"
+#include "Enemy.h"
 
 int main()
 {
@@ -21,8 +22,15 @@ int main()
    
     ////// Props
     Prop props[2] {
-        Prop{Vector2{600.f, 300.f}, Texture2D{LoadTexture("nature_tileset/Rock.png")}},
-        Prop{Vector2{400.f, 500.f}, Texture2D{LoadTexture("nature_tileset/Log.png")}},
+        Prop{Vector2{600.f, 300.f}, LoadTexture("nature_tileset/Rock.png")},
+        Prop{Vector2{400.f, 500.f}, LoadTexture("nature_tileset/Log.png")},
+    };
+
+    ////// Enemies
+    Enemy goblin{
+        Vector2{}, 
+        LoadTexture("characters/goblin_idle_spritesheet.png"), 
+        LoadTexture("characters/goblin_run_spritesheet.png")
     };
 
 
@@ -64,6 +72,9 @@ int main()
                 knight.undoMovements();
             };
         }
+
+        // draw enemy
+        goblin.tick(dt);
         
 
         EndDrawing();
