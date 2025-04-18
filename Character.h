@@ -6,6 +6,7 @@ class Character {
         Vector2 getWorldPos() { return this->worldPos; }
         void tick(float deltaTime);
         void undoMovements();
+        Rectangle getCollisionRec();
     
     private:
         Texture2D idle{LoadTexture("characters/knight_idle_spritesheet.png")};
@@ -13,7 +14,7 @@ class Character {
         Texture2D texture{idle};
         Vector2 screenPos{};
         Vector2 worldPos{};
-        Vector2 worldPosLastFrame{0.0, 0.0};
+        Vector2 worldPosLastFrame{};
         // 1: facing right, -1: facing left
         float rightLeft{-1.f};
         // Animation variables

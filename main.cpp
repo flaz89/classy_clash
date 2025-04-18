@@ -2,6 +2,7 @@
 #include "raymath.h"
 #include <iostream>
 #include "Character.h"
+#include "Prop.h"
 
 int main()
 {
@@ -17,6 +18,12 @@ int main()
 
     ////// Character
     Character knight{windowDimension[0], windowDimension[1]};
+   
+    ////// Props
+    Prop props[2] {
+        Prop{Vector2{600.f, 300.f}, Texture2D{LoadTexture("nature_tileset/Rock.png")}},
+        Prop{Vector2{400.f, 500.f}, Texture2D{LoadTexture("nature_tileset/Log.png")}},
+    };
 
 
     ////// Target FPS
@@ -34,15 +41,30 @@ int main()
         levelMapPos = Vector2Scale(knight.getWorldPos(), -1.f);
         DrawTextureEx(levelMap, levelMapPos, 0.0, mapScale, WHITE);
 
+        // draw props fom array
+        for (Prop prop : props) {
+            prop.render(knight.getWorldPos());
+        }
+       
+
         // draw character
         knight.tick(dt);
         // check map bounds
         if (knight.getWorldPos().x < 0.f || 
             knight.getWorldPos().y < 0.f || 
             knight.getWorldPos().x + windowDimension[0] > levelMap.width * mapScale || 
-            knight.getWorldPos().y + windowDimension[1] > levelMap.height * mapScale) {
+            knight.getWorldPos().y + windowDimension[1] > levelMap.height * mapScale) 
+        {
+            knight.undoMovements();
+        }
+
+        // check prop collision
+        for (Prop prop : props) {
+            if (CheckCollisionRecs(knight.getCollisionRec(), prop.getCollisionRec(knight.getWorldPos()))) {
                 knight.undoMovements();
-            }
+            };
+        }
+        
 
         EndDrawing();
     }

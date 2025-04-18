@@ -47,3 +47,7 @@ void Character::tick(float deltaTime)
 void Character::undoMovements() {
     worldPos = worldPosLastFrame;
 }
+
+Rectangle Character::getCollisionRec() {
+    return Rectangle{screenPos.x, screenPos.y, width * scale, height * scale};
+}
