@@ -1,21 +1,18 @@
 #include "Character.h"
 #include "raymath.h"
 
-Character::Character() {
+Character::Character(int winWidth, int winHeight) {
     width = texture.width / maxFrames;
     height = texture.height;
-}
-
-void Character::setScreenPos(int winWidth, int winHeight)
-{
     screenPos = {
-        (float)winWidth * 0.5f - (width * 0.5f) * 4.0f,
-        (float)winHeight * 0.5f - (height * 0.5f) * 4.0f
+        static_cast<float>(winWidth) * 0.5f - (width * 0.5f) * scale,
+        static_cast<float>(winHeight) * 0.5f - (height * 0.5f) * scale
     };
 }
 
 void Character::tick(float deltaTime)
 {
+    worldPosLastFrame = worldPos;
     Vector2 direction{};
     if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT)) direction.x -= 1.0;
     if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)) direction.x += 1.0;
@@ -43,6 +40,10 @@ void Character::tick(float deltaTime)
 
     // draw knight
     Rectangle source{frame * width, 0.0, rightLeft * width, height};
-    Rectangle dest{screenPos.x, screenPos.y, width * 4.0f, height * 4.0f};
+    Rectangle dest{screenPos.x, screenPos.y, width * scale, height * scale};
     DrawTexturePro(texture, source, dest, {0.0, 0.0}, 0.0, WHITE);
+}
+
+void Character::undoMovements() {
+    worldPos = worldPosLastFrame;
 }

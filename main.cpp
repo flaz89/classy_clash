@@ -13,10 +13,10 @@ int main()
     ////// Level map
     Texture2D levelMap{LoadTexture("nature_tileset/OpenWorldMap24x24.png")};
     Vector2 levelMapPos{0.0, 0.0};
+    const float mapScale{4.0};
 
     ////// Character
-    Character knight;
-    knight.setScreenPos(windowDimension[0], windowDimension[1]);
+    Character knight{windowDimension[0], windowDimension[1]};
 
 
     ////// Target FPS
@@ -32,11 +32,17 @@ int main()
 
         // draw map
         levelMapPos = Vector2Scale(knight.getWorldPos(), -1.f);
-        DrawTextureEx(levelMap, levelMapPos, 0.0, 4.0, WHITE);
+        DrawTextureEx(levelMap, levelMapPos, 0.0, mapScale, WHITE);
 
         // draw character
         knight.tick(dt);
-
+        // check map bounds
+        if (knight.getWorldPos().x < 0.f || 
+            knight.getWorldPos().y < 0.f || 
+            knight.getWorldPos().x + windowDimension[0] > levelMap.width * mapScale || 
+            knight.getWorldPos().y + windowDimension[1] > levelMap.height * mapScale) {
+                knight.undoMovements();
+            }
 
         EndDrawing();
     }
