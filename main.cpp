@@ -58,7 +58,7 @@ int main()
             knight.undoMovements();
         }
 
-        // check prop collision
+        // check prop collisions
         for (Prop prop : props) {
             if (CheckCollisionRecs(knight.getCollisionRec(), prop.getCollisionRec(knight.getWorldPos()))) {
                 knight.undoMovements();
