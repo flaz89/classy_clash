@@ -4,6 +4,7 @@
 #include "Character.h"
 #include "Prop.h"
 #include "Enemy.h"
+#include <string>
 
 int main()
 {
@@ -28,10 +29,24 @@ int main()
 
     ////// Enemies
     Enemy goblin{
-        Vector2{}, 
+        Vector2{800.f, 300.f}, 
         LoadTexture("characters/goblin_idle_spritesheet.png"), 
         LoadTexture("characters/goblin_run_spritesheet.png")
     };
+
+    Enemy goblin2{
+        Vector2{300.f, 200.f}, 
+        LoadTexture("characters/goblin_idle_spritesheet.png"), 
+        LoadTexture("characters/goblin_run_spritesheet.png")
+    };
+
+    Enemy slime{
+        Vector2{500.f, 700.f}, 
+        LoadTexture("characters/slime_idle_spritesheet.png"), 
+        LoadTexture("characters/slime_run_spritesheet.png")
+    };
+
+    Enemy* enemies[] {&goblin, &goblin2, &slime};
 
 
     ////// Target FPS
@@ -53,6 +68,16 @@ int main()
         for (Prop prop : props) {
             prop.render(knight.getWorldPos());
         }
+
+        if (!knight.getAlive()) { // if player dies
+            DrawText("GAME OVER", 55.f, 45.f, 40, RED);
+            EndDrawing();
+            continue;
+        } else { // if layer is alive
+            std::string knightHealth {"Health: "};
+            knightHealth.append(std::to_string(knight.getHealth()), 0 ,5);
+            DrawText(knightHealth.c_str(), 55.f, 45.f, 40, RED);
+        }
        
 
         // draw character
@@ -73,8 +98,20 @@ int main()
             };
         }
 
-        // draw enemy
-        goblin.tick(dt);
+        // draw enemies
+        for (Enemy* enemy : enemies) {
+            enemy->setTarget(&knight);
+            enemy->tick(dt);
+        }
+        
+        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+            for (Enemy* enemy : enemies) {
+                if (CheckCollisionRecs(enemy->getCollisionRec(), knight.getCollisionRec())) {
+                    enemy->setAlive(false);
+                }
+            }
+        } 
+        
         
 
         EndDrawing();

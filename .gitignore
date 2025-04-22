@@ -2,3 +2,4 @@
 *.dsym
 main
 .DS_Store
+.dSYM

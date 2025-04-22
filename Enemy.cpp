@@ -1,37 +1,35 @@
 #include "Enemy.h"
+#include "raymath.h"
 
 // constructor
-Enemy::Enemy(Vector2 pos, Texture2D tex_idle, Texture2D tex_run): 
-worldPos(pos),
-texture(tex_idle),
-idle(tex_idle),
-run(tex_run) {
+Enemy::Enemy(Vector2 pos, Texture2D tex_idle, Texture2D tex_run) {
+    worldPos = pos,
+    texture = tex_idle,
+    idle = tex_idle,
+    running = tex_run,
     width = texture.width / maxFrames;
     height = texture.height;
+    speed = 3.5f;
 };
+
+Vector2 Enemy::getScreenPos() {
+    return Vector2Subtract(worldPos, target->getWorldPos());
+}
 
 // tick
 void Enemy::tick(float deltaTime) {
-    worldPosLastFrame = worldPos;
 
-    runningTime += deltaTime;
-    if (runningTime >= updateTime) {
-        frame++;
-        runningTime = 0.f;
-        if (frame > maxFrames) frame = 0;
+    if (!getAlive()) return;
+
+    // get velocity to target
+    velocity = Vector2Subtract(target->getScreenPos(), getScreenPos());
+    if (Vector2Length(velocity) < radius) velocity = {};
+    BaseCharacter::tick(deltaTime);
+
+    if (CheckCollisionRecs(target->getCollisionRec(), getCollisionRec())) {
+        target->takeDamage(damageperSec * deltaTime);
     }
-
-    // draw enemy
-    Rectangle source{frame * width, 0.0, rightLeft * width, height};
-    Rectangle dest{screenPos.x, screenPos.y, width * scale, height * scale};
-    DrawTexturePro(texture, source, dest, {0.0, 0.0}, 0.0, WHITE);
 }
 
-// restor position of last frame
-void Enemy::undoMovements() {
-    worldPos = worldPosLastFrame;
-}
 
-Rectangle Enemy::getCollisionRec() {
-    return Rectangle{screenPos.x, screenPos.y, width * scale, height * scale};
-}
+
